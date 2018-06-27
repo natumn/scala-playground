@@ -4,24 +4,17 @@ import org.mindrot.jbcrypt.BCrypt
 import scalikejdbc._
 
 trait UserService {
-  val maxNameLength = 32
+  self: PasswordSerive with UserRepository => 
 
-  def register(name: String, rawPassword: String): User
-
-  def login(name: String, rawPassword: String): User
-}
-
-class UserServiceImpl extends UserService with PasswordServiceImpl with UserRepositoryImpl {
   val maxNameLength = 32
 
   def register(name: String, rawPassword: String): User = {
-    if (name.length > maxNameLength) {
-      throw new Exception("Too lang name!")
+    if (name.length >  maxNameLength ) {
+      throw new Exception("Too long name!")
     }
     if (find(name).isDefined) {
       throw new Exception("Already registered!")
     }
-
     insert(User(name, hashPassword(rawPassword)))
   }
 
@@ -37,3 +30,4 @@ class UserServiceImpl extends UserService with PasswordServiceImpl with UserRepo
   }
 }
 
+class UserServiceImpl extends UserService with PasswordServiceImpl with UserRepositoryImpl
